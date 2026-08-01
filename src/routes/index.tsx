@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { pickTopic, type Topic } from "@/lib/prompts";
+import { pickTopic, TOPICS, type Category, type Topic } from "@/lib/prompts";
 
 export const Route = createFileRoute("/")({
   head: () => ({
