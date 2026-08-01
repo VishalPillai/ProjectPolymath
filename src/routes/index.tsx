@@ -41,12 +41,21 @@ function buildReel(selected: Topic, exclude?: string): Topic[] {
   return [...before, selected, ...after];
 }
 
+const PLACEHOLDER: Topic = { category: "Nature" as Category, text: PLACEHOLDER_TEXT };
+
+// Deterministic initial reel so SSR and client markup match exactly.
+function initialReel(): Topic[] {
+  const pool = TOPICS.filter((t) => t.text !== PLACEHOLDER_TEXT);
+  const items = Array.from(
+    { length: REEL_SIZE - 1 },
+    (_, i) => pool[(i * 7) % pool.length]!,
+  );
+  return [...items.slice(0, SELECTED_INDEX), PLACEHOLDER, ...items.slice(SELECTED_INDEX)];
+}
+
 function Index() {
   const [topic, setTopic] = useState<Topic | null>(null);
-  const [reel, setReel] = useState<Topic[]>(() => {
-    const placeholder = { category: "Nature" as Category, text: PLACEHOLDER_TEXT };
-    return buildReel(placeholder);
-  });
+  const [reel, setReel] = useState<Topic[]>(initialReel);
   const [isSpinning, setIsSpinning] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
