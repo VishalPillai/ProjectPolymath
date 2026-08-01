@@ -99,30 +99,44 @@
   }
 }
 
-@keyframes slot-roll {
+@keyframes reel-fall {
   0% {
-    opacity: 0;
+    transform: translateY(0);
     filter: blur(10px);
-    transform: translateY(-1.1em);
+    opacity: 0.5;
   }
-  40% {
-    opacity: 0.8;
-    filter: blur(5px);
-    transform: translateY(0.25em);
-  }
-  70% {
-    opacity: 1;
-    filter: blur(1px);
-    transform: translateY(-0.08em);
+  50% {
+    filter: blur(6px);
+    opacity: 0.9;
   }
   100% {
+    transform: translateY(var(--reel-end));
+    filter: blur(0);
     opacity: 1;
-    filter: blur(0px);
-    transform: translateY(0);
   }
 }
 
-.slot-roll {
-  animation: slot-roll 0.5s ease-out forwards;
+.reel-window {
+  display: block;
+  height: 1.28em;
+  overflow: hidden;
+  position: relative;
+}
+
+.reel-strip {
+  display: flex;
+  flex-direction: column;
+}
+
+.reel-item {
+  display: block;
+  height: 1.28em;
+  line-height: 1.28;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.reel-spin {
+  animation: reel-fall 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
   will-change: transform, filter, opacity;
 }

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { pickTopic, type Topic } from "@/lib/prompts";
+import { pickTopic, TOPICS, type Category, type Topic } from "@/lib/prompts";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,38 +25,50 @@ export const Route = createFileRoute("/")({
 });
 
 const SPIN_DURATION = 500;
+const REEL_SIZE = 11;
+const SELECTED_INDEX = 5;
+const LINE_HEIGHT_EM = 1.28;
+const PLACEHOLDER_TEXT = "A random topic.";
+
+function buildReel(selected: Topic, exclude?: string): Topic[] {
+  const pool = TOPICS.filter((t) => t.text !== selected.text && t.text !== exclude);
+  const pick = () => {
+    const idx = Math.floor(Math.random() * pool.length);
+    return pool[idx]!;
+  };
+  const before = Array.from({ length: SELECTED_INDEX }, pick);
+  const after = Array.from({ length: REEL_SIZE - SELECTED_INDEX - 1 }, pick);
+  return [...before, selected, ...after];
+}
 
 function Index() {
   const [topic, setTopic] = useState<Topic | null>(null);
-  const [displayText, setDisplayText] = useState("A random topic about almost anything.");
+  const [reel, setReel] = useState<Topic[]>(() => {
+    const placeholder = { category: "Nature" as Category, text: PLACEHOLDER_TEXT };
+    return buildReel(placeholder);
+  });
   const [isSpinning, setIsSpinning] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
   const spin = useCallback(() => {
-    setIsSpinning(true);
-    if (intervalRef.current) clearInterval(intervalRef.current);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-    intervalRef.current = setInterval(() => {
-      setDisplayText(pickTopic().text);
-    }, 60);
+    const next = pickTopic(topic?.text);
+    setReel(buildReel(next, topic?.text));
+    setIsSpinning(true);
+    setTopic(next);
 
     timeoutRef.current = setTimeout(() => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      const next = pickTopic(topic?.text);
-      setTopic(next);
-      setDisplayText(next.text);
       setIsSpinning(false);
     }, SPIN_DURATION);
-  }, [topic?.text]);
+  }, [topic]);
+
+  const reelEnd = `-${SELECTED_INDEX * LINE_HEIGHT_EM}em`;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10 sm:px-8">
@@ -65,12 +77,23 @@ function Index() {
       </header>
 
       <section className="flex flex-1 flex-col justify-center py-16">
-        <h1
-          className={`font-serif text-3xl leading-[1.28] tracking-tight transition-all duration-300 sm:text-[2.35rem] ${
-            isSpinning ? "slot-roll" : ""
-          }`}
-        >
-          {displayText}
+        <h1 className="font-serif text-3xl leading-[1.28] tracking-tight sm:text-[2.35rem]">
+          <span className="reel-window">
+            <span
+              key={topic?.text ?? "initial"}
+              className={`reel-strip ${isSpinning ? "reel-spin" : ""}`}
+              style={{
+                "--reel-end": reelEnd,
+                transform: isSpinning ? undefined : `translateY(${reelEnd})`,
+              } as React.CSSProperties}
+            >
+              {reel.map((t, i) => (
+                <span key={`${t.text}-${i}`} className="reel-item">
+                  {t.text}
+                </span>
+              ))}
+            </span>
+          </span>
         </h1>
 
         <div className="mt-12">
