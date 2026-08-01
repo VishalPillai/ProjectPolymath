@@ -98,3 +98,26 @@
     transform: translateY(1px);
   }
 }
+
+@keyframes slot-roll {
+  0% {
+    opacity: 0.5;
+    filter: blur(8px);
+    transform: translateY(-0.6em);
+  }
+  50% {
+    opacity: 0.85;
+    filter: blur(4px);
+    transform: translateY(0.15em);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+.slot-roll {
+  animation: slot-roll 0.5s ease-out forwards;
+  will-change: transform, filter, opacity;
+}
