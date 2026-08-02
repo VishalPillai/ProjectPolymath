@@ -4,6 +4,8 @@ import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { pickTopic, type Topic } from "@/lib/prompts";
 
+export type { Topic };
+
 const GenerateTopicInput = z.object({
   exclude: z.string().optional(),
 });
