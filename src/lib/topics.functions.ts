@@ -34,6 +34,16 @@ export const generateTopic = createServerFn({ method: "POST" })
         return pickTopic(data.exclude);
       }
 
+      // Test direct gateway fetch first
+      try {
+        const response = await fetch("https://ai.gateway.lovable.dev/v1/models", {
+          headers: { "Lovable-API-Key": key },
+        });
+        log("direct fetch status:", response.status);
+      } catch (e) {
+        log("direct fetch error:", e);
+      }
+
       const gateway = createLovableAiGatewayProvider(key);
       log("gateway created");
 
