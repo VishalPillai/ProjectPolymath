@@ -101,12 +101,14 @@ function Index() {
   const spin = useCallback(async () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsSpinning(true);
+    console.log("[spin] starting");
 
     try {
       const next = await fetchTopic({ data: { exclude: topic?.text } });
+      console.log("[spin] got topic:", next);
       setTopic(next);
     } catch (error) {
-      console.error("Failed to generate topic", error);
+      console.error("[spin] Failed to generate topic", error);
     }
 
     timeoutRef.current = setTimeout(() => {
