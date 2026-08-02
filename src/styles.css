@@ -124,9 +124,20 @@
   vertical-align: top;
 }
 
+.reel-ghost {
+  display: block;
+  visibility: hidden;
+  height: 1.28em;
+  line-height: 1.28;
+  white-space: pre;
+}
+
 .reel-strip {
   display: flex;
   flex-direction: column;
+  position: absolute;
+  inset: 0 0 auto 0;
+  align-items: center;
 }
 
 .reel-item {
@@ -136,6 +147,7 @@
   flex-shrink: 0;
   white-space: pre;
 }
+
 
 .reel-spin {
   animation: reel-fall 0.5s cubic-bezier(0.33, 1, 0.68, 1) var(--reel-delay, 0ms) both;
