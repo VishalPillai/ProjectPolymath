@@ -18,8 +18,7 @@ export const generateTopic = createServerFn({ method: "POST" })
       const gateway = createLovableAiGatewayProvider(key);
       const result = await generateText({
         model: gateway("google/gemini-3.6-flash"),
-        maxTokens: 32,
-        prompt: `Generate a single, short, intriguing niche topic for a curious person who wants to become a polymath. The topic should be something they can research or think about. It should be a short phrase (1-4 words), not a full sentence. Make it diverse across areas like history, geography, science, technology, current affairs, art, philosophy, economics, culture, and nature. Avoid generic topics like "climate change" or "World War II"; pick something surprising, specific, or lesser-known. Exclude: ${data.exclude || "none"}. Return ONLY the topic name, nothing else.`,
+        prompt: `Generate a single, short, intriguing niche topic for a curious person who wants to become a polymath. The topic should be something they can research or think about. It should be a short phrase (1-4 words), not a full sentence. Make it diverse across areas like history, geography, science, technology, current affairs, art, philosophy, economics, culture, and nature. Avoid generic topics like "climate change" or "World War II"; pick something surprising, specific, or lesser-known. Keep it under 120 characters. Exclude: ${data.exclude || "none"}. Return ONLY the topic name, nothing else.`,
       });
 
       const text = result.text
@@ -32,7 +31,7 @@ export const generateTopic = createServerFn({ method: "POST" })
         throw new Error("Generated topic empty or too long");
       }
 
-      return { category: "Generated", text } as Topic;
+      return { category: "Generated" as unknown as Topic["category"], text } as Topic;
     } catch (error) {
       console.error(
         "AI topic generation failed, falling back to static list:",
