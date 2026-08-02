@@ -90,6 +90,7 @@ function Index() {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fetchTopic = useServerFn(generateTopic);
 
   useEffect(() => {
     return () => {
@@ -97,16 +98,21 @@ function Index() {
     };
   }, []);
 
-  const spin = useCallback(() => {
+  const spin = useCallback(async () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    const next = pickTopic(topic?.text);
     setIsSpinning(true);
-    setTopic(next);
+
+    try {
+      const next = await fetchTopic({ data: { exclude: topic?.text } });
+      setTopic(next);
+    } catch (error) {
+      console.error("Failed to generate topic", error);
+    }
 
     timeoutRef.current = setTimeout(() => {
       setIsSpinning(false);
     }, SPIN_DURATION + 200);
-  }, [topic]);
+  }, [topic, fetchTopic]);
 
   const text = topic?.text ?? PLACEHOLDER_TEXT;
 
@@ -118,9 +124,9 @@ function Index() {
 
       <section className="flex flex-1 flex-col justify-center py-16">
         <h1 className="font-serif text-3xl leading-[1.28] tracking-tight sm:text-[2.35rem]">
-          <span key={text} className="flex flex-wrap">
+          <span className="flex flex-wrap">
             {Array.from(text).map((c, i) => (
-              <CharReel key={`${c}-${i}`} char={c} index={i} spinning={isSpinning} />
+              <CharReel key={i} char={c} index={i} spinning={isSpinning} />
             ))}
           </span>
         </h1>
