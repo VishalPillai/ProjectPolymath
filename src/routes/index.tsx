@@ -61,6 +61,8 @@ function CharReel({
 
   return (
     <span className="reel-window">
+      {/* invisible sizer keeps each letter locked to its final width */}
+      <span className="reel-ghost">{char}</span>
       <span
         className={`reel-strip ${spinning ? "reel-spin" : ""}`}
         style={
@@ -80,6 +82,7 @@ function CharReel({
       </span>
     </span>
   );
+
 }
 
 function Index() {
