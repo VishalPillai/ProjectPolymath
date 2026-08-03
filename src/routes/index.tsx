@@ -8,13 +8,13 @@ import { TopicNotes } from "@/components/TopicNotes";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Unprompted — A random topic for curious minds" },
+      { title: "Project Polymath" },
       {
         name: "description",
         content:
           "Discover a random topic across history, geography, science, technology, current affairs and more. Built for polymaths who want to keep learning.",
       },
-      { property: "og:title", content: "Unprompted — A random topic for curious minds" },
+      { property: "og:title", content: "Project Polymath, for those who aspire to become unique" },
       {
         property: "og:description",
         content:
@@ -147,7 +147,7 @@ function Index() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10 sm:px-8">
       <header>
-        <span className="font-serif text-lg tracking-tight">unprompted</span>
+        <span className="font-serif text-lg tracking-tight"Project Polymath</span>
       </header>
 
       <section className="flex flex-1 flex-col justify-center py-16">
