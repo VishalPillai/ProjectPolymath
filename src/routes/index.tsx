@@ -89,6 +89,7 @@ function CharReel({
 function Index() {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fetchTopic = useServerFn(generateTopic);
 
