@@ -3,20 +3,8 @@ import { generateText } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { pickTopic, type Topic } from "@/lib/prompts";
-import fs from "node:fs";
 
 export type { Topic };
-
-const LOG_PATH = "/tmp/topic-debug.log";
-
-function log(...args: unknown[]) {
-  const line = `[${new Date().toISOString()}] ${args.map((a) => (typeof a === "string" ? a : JSON.stringify(a))).join(" ")}\n`;
-  try {
-    fs.appendFileSync(LOG_PATH, line);
-  } catch {
-    console.log(line);
-  }
-}
 
 const GenerateTopicInput = z.object({
   exclude: z.string().optional(),
@@ -25,45 +13,24 @@ const GenerateTopicInput = z.object({
 export const generateTopic = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => GenerateTopicInput.parse(input))
   .handler(async ({ data }) => {
-    log("handler called", data);
     try {
       const key = process.env["LOVABLE_API_KEY"];
-      log("key present:", !!key);
-      if (!key) {
-        log("No key, fallback");
-        return pickTopic(data.exclude);
-      }
-
-      // Test direct gateway fetch first
-      try {
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/models", {
-          headers: { "Lovable-API-Key": key },
-        });
-        log("direct fetch status:", response.status);
-      } catch (e) {
-        log("direct fetch error:", e);
-      }
+      if (!key) return pickTopic(data.exclude);
 
       const gateway = createLovableAiGatewayProvider(key);
-      log("gateway created");
 
-      const prompt = `Generate a single, short, intriguing niche topic for a curious person who wants to become a polymath. The topic should be something they can research or think about. It should be a short phrase (1-4 words), not a full sentence. Make it diverse across areas like history, geography, science, technology, current affairs, art, philosophy, economics, culture, and nature. Avoid generic topics like "climate change" or "World War II"; pick something surprising, specific, or lesser-known. Keep it under 120 characters. Exclude: ${data.exclude || "none"}. Return ONLY the topic name, nothing else.`;
+      const prompt = `Generate a single, short, intriguing niche topic for a curious person who wants to become a polymath. It should be a short phrase (1-4 words), not a sentence. Make it diverse across history, geography, science, technology, current affairs, art, philosophy, economics, culture and nature. Avoid generic topics; pick something surprising, specific or lesser-known. Under 60 characters. Exclude: ${data.exclude || "none"}. Return ONLY the topic name, nothing else.`;
 
-      const result = await Promise.race([
-        generateText({
-          model: gateway("google/gemini-3.6-flash"),
-          prompt,
-        }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("AI gateway timeout after 4s")), 4000),
-        ),
-      ]);
-      log("got result:", result.text);
+      const result = await generateText({
+        model: gateway("google/gemini-3.6-flash"),
+        prompt,
+        abortSignal: AbortSignal.timeout(15000),
+      });
 
       const text = result.text
         .trim()
-        .replace(/^[^\w\s]+|[^\w\s]+$/g, "")
         .split("\n")[0]!
+        .replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N})]+$/gu, "")
         .trim();
 
       if (text.length === 0 || text.length >= 120) {
@@ -72,7 +39,7 @@ export const generateTopic = createServerFn({ method: "POST" })
 
       return { category: "Generated" as Topic["category"], text } as Topic;
     } catch (error) {
-      log("AI topic generation failed, falling back to static list:", error);
+      console.error("AI topic generation failed, falling back:", error);
       return pickTopic(data.exclude);
     }
   });
