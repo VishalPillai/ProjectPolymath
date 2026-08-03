@@ -139,7 +139,7 @@ function Index() {
           <button
             type="button"
             onClick={spin}
-            disabled={isSpinning}
+            disabled={isSpinning || isLoading}
             className="pill-cta px-10 py-4 text-base font-medium disabled:opacity-60"
           >
             {topic ? "Another" : "Spin"}
