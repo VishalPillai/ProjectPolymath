@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { generateTopic, type Topic } from "@/lib/topics.functions";
+import { explainTopic } from "@/lib/explain.functions";
+import { TopicNotes } from "@/components/TopicNotes";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -90,8 +92,13 @@ function Index() {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [notes, setNotes] = useState<string | null>(null);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fetchTopic = useServerFn(generateTopic);
+  const fetchNotes = useServerFn(explainTopic);
 
   useEffect(() => {
     return () => {
@@ -118,6 +125,23 @@ function Index() {
     }
   }, [topic, fetchTopic]);
 
+  const openNotes = useCallback(async () => {
+    if (!topic) return;
+    setNotesOpen(true);
+    setNotesError(null);
+    setNotes(null);
+    setNotesLoading(true);
+    try {
+      const result = await fetchNotes({ data: { topic: topic.text } });
+      setNotes(result.notes);
+    } catch (error) {
+      console.error("[notes] Failed to explain topic", error);
+      setNotesError("Couldn't write the notes just now. Try again in a moment.");
+    } finally {
+      setNotesLoading(false);
+    }
+  }, [topic, fetchNotes]);
+
   const text = topic?.text ?? PLACEHOLDER_TEXT;
 
   return (
@@ -135,7 +159,7 @@ function Index() {
           </span>
         </h1>
 
-        <div className="mt-12">
+        <div className="mt-12 flex flex-wrap items-center gap-4">
           <button
             type="button"
             onClick={spin}
@@ -144,8 +168,28 @@ function Index() {
           >
             {topic ? "Another" : "Spin"}
           </button>
+
+          {topic && (
+            <button
+              type="button"
+              onClick={openNotes}
+              className="rounded-full border border-border px-8 py-4 text-base font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+            >
+              Read up on it
+            </button>
+          )}
         </div>
       </section>
+
+      {notesOpen && topic && (
+        <TopicNotes
+          topic={topic.text}
+          notes={notes}
+          isLoading={notesLoading}
+          error={notesError}
+          onClose={() => setNotesOpen(false)}
+        />
+      )}
     </main>
   );
 }
