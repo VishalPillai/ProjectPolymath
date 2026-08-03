@@ -100,18 +100,21 @@ function Index() {
 
   const spin = useCallback(async () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsSpinning(true);
+    setIsLoading(true);
 
     try {
       const next = await fetchTopic({ data: { exclude: topic?.text } });
+      // Only start the reel once the new text is what's on screen.
       setTopic(next);
+      setIsSpinning(true);
+      timeoutRef.current = setTimeout(() => {
+        setIsSpinning(false);
+      }, SPIN_DURATION + 200);
     } catch (error) {
       console.error("[spin] Failed to generate topic", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    timeoutRef.current = setTimeout(() => {
-      setIsSpinning(false);
-    }, SPIN_DURATION + 200);
   }, [topic, fetchTopic]);
 
   const text = topic?.text ?? PLACEHOLDER_TEXT;
