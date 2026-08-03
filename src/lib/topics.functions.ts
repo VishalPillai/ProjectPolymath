@@ -19,7 +19,7 @@ export const generateTopic = createServerFn({ method: "POST" })
 
       const gateway = createLovableAiGatewayProvider(key);
 
-      const prompt = `Generate a single, short, intriguing niche topic for a curious person who wants to become a polymath. It should be a short phrase (1-4 words), not a sentence. Make it diverse across history, geography, science, technology, current affairs, art, philosophy, economics, culture and nature. Avoid generic topics; pick something surprising, specific or lesser-known. Under 60 characters. Exclude: ${data.exclude || "none"}. Return ONLY the topic name, nothing else.`;
+      const prompt = `Give me one simple, interesting topic worth learning about — the kind of thing a curious generalist would enjoy looking up. Use plain, everyday words (1-3 words), no jargon, no obscure academic terms. Mix areas: history, geography, science, technology, current affairs, art, philosophy, economics, culture, nature. Under 30 characters. Exclude: ${data.exclude || "none"}. Return ONLY the topic name, nothing else.`;
 
       const result = await generateText({
         model: gateway("google/gemini-3.6-flash"),

@@ -89,6 +89,7 @@ function CharReel({
 function Index() {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fetchTopic = useServerFn(generateTopic);
 
@@ -100,18 +101,21 @@ function Index() {
 
   const spin = useCallback(async () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsSpinning(true);
+    setIsLoading(true);
 
     try {
       const next = await fetchTopic({ data: { exclude: topic?.text } });
+      // Only start the reel once the new text is what's on screen.
       setTopic(next);
+      setIsSpinning(true);
+      timeoutRef.current = setTimeout(() => {
+        setIsSpinning(false);
+      }, SPIN_DURATION + 200);
     } catch (error) {
       console.error("[spin] Failed to generate topic", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    timeoutRef.current = setTimeout(() => {
-      setIsSpinning(false);
-    }, SPIN_DURATION + 200);
   }, [topic, fetchTopic]);
 
   const text = topic?.text ?? PLACEHOLDER_TEXT;
@@ -135,7 +139,7 @@ function Index() {
           <button
             type="button"
             onClick={spin}
-            disabled={isSpinning}
+            disabled={isSpinning || isLoading}
             className="pill-cta px-10 py-4 text-base font-medium disabled:opacity-60"
           >
             {topic ? "Another" : "Spin"}
