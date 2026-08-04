@@ -95,12 +95,23 @@
     0 0 48px oklch(0.72 0.2 330 / 0.18);
 }
 
-@utility neon-grid {
-  background-image:
-    linear-gradient(oklch(0.85 0.16 195 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.85 0.16 195 / 0.06) 1px, transparent 1px);
-  background-size: 3.5rem 3.5rem;
-  mask-image: radial-gradient(70% 60% at 50% 45%, #000 0%, transparent 100%);
+@utility neon-blob {
+  position: absolute;
+  border-radius: 42% 58% 63% 37% / 47% 39% 61% 53%;
+  filter: blur(70px);
+  opacity: 0.55;
+  animation: blob-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes blob-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    border-radius: 42% 58% 63% 37% / 47% 39% 61% 53%;
+  }
+  100% {
+    transform: translate3d(4%, -6%, 0) scale(1.15) rotate(24deg);
+    border-radius: 58% 42% 38% 62% / 62% 55% 45% 38%;
+  }
 }
 
 @utility pill-cta {
