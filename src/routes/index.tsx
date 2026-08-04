@@ -145,13 +145,18 @@ function Index() {
   const text = topic?.text ?? PLACEHOLDER_TEXT;
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10 sm:px-8">
-      <header>
-        <span className="font-serif text-lg tracking-tight">Project Polymath</span>
+    <main className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10 sm:px-8">
+      <div className="neon-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
+
+      <header className="flex items-center gap-3">
+        <span className="h-2 w-2 rounded-full bg-primary shadow-glow" />
+        <span className="font-serif text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
+          Project Polymath
+        </span>
       </header>
 
       <section className="flex flex-1 flex-col justify-center py-16">
-        <h1 className="font-serif text-3xl leading-[1.28] tracking-tight sm:text-[2.35rem]">
+        <h1 className="neon-text font-serif text-3xl font-light leading-[1.28] tracking-tight sm:text-[2.6rem]">
           <span className="flex flex-wrap">
             {Array.from(text).map((c, i) => (
               <CharReel key={i} char={c} index={i} spinning={isSpinning} />
@@ -164,7 +169,7 @@ function Index() {
             type="button"
             onClick={spin}
             disabled={isSpinning || isLoading}
-            className="pill-cta px-10 py-4 text-base font-medium disabled:opacity-60"
+            className="pill-cta px-10 py-4 text-base font-medium tracking-wide disabled:opacity-60"
           >
             {topic ? "Another" : "Spin"}
           </button>
@@ -173,7 +178,7 @@ function Index() {
             <button
               type="button"
               onClick={openNotes}
-              className="rounded-full border border-border px-8 py-4 text-base font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              className="rounded-full border border-border/80 bg-card/40 px-8 py-4 text-base font-medium text-muted-foreground backdrop-blur transition-all hover:border-primary hover:text-primary"
             >
               Read up on it
             </button>
