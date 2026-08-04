@@ -147,7 +147,7 @@ function Index() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10 sm:px-8">
       <header>
-        <span className="font-serif text-lg tracking-tight"Project Polymath</span>
+        <span className="font-serif text-lg tracking-tight">Project Polymath</span>
       </header>
 
       <section className="flex flex-1 flex-col justify-center py-16">
