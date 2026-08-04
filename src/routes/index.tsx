@@ -146,7 +146,17 @@ function Index() {
 
   return (
     <main className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10 sm:px-8">
-      <div className="neon-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div className="neon-blob left-[-12%] top-[-8%] h-[36rem] w-[36rem] bg-primary/25" />
+        <div
+          className="neon-blob bottom-[-18%] right-[-10%] h-[32rem] w-[32rem] bg-accent/25"
+          style={{ animationDelay: "-6s", animationDuration: "24s" }}
+        />
+        <div
+          className="neon-blob left-[45%] top-[35%] h-[22rem] w-[22rem] bg-primary/15"
+          style={{ animationDelay: "-12s", animationDuration: "30s" }}
+        />
+      </div>
 
       <header className="flex items-center gap-3">
         <span className="h-2 w-2 rounded-full bg-primary shadow-glow" />
