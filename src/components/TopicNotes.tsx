@@ -38,7 +38,9 @@ export function TopicNotes({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background animate-fade-in">
       <div className="mx-auto w-full max-w-2xl px-6 py-10 sm:px-8">
         <div className="flex items-center justify-between gap-4">
-          <span className="font-serif text-lg tracking-tight">unprompted</span>
+          <span className="font-serif text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
+            Project Polymath
+          </span>
           <button
             type="button"
             onClick={onClose}
